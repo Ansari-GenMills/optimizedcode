@@ -1,0 +1,96 @@
+# dataingestion_config.yaml
+project_id: "cmi-cat-fcst-dna-dev-75ee21"
+gcs_bucket_name: "transient_cmi-cat-fcst-dna-dev-75ee21"
+Data_input_path: "ma-cmi-cf-test/"
+
+
+required_columns:
+  - "mkt"
+  - "subcategory"
+  - "fiscal_break"
+  - "fiscal"
+  - "months"
+  - "period"
+  - "dol_val"
+  - "eq_vol"
+  - "avg_eq_price"
+  - "dist_points"
+
+queries:
+  - "SELECT * FROM `cmi-cat-fcst-dna-dev-75ee21.input.category_forecast_asia` LIMIT 100000"
+  
+column_types:
+  #country: "str"
+  mkt: "str"
+  subcategory: 'str'
+  months: 'datetime'
+  dist_points: 'float'
+  dol_val: 'float'
+  fiscal_break: 'str'
+  fiscal: 'str'
+  period: 'str'
+  eq_vol: 'float'
+  avg_eq_price: 'float'
+
+source_input_path: "ma-cmi-cf-test/category_forecast_asia.csv"
+dtype_output_path: "ma-cmi-cf-test/asia_Dtype_converted_df.csv"
+date_gap_check_output_path: "ma-cmi-cf-test/asia_gap_check_df.csv"
+imputed_df_output_path: "ma-cmi-cf-test/asia_imputed_df.csv"
+outlier_treated_df_output_path: "ma-cmi-cf-test/asia_outlier_treated_df.csv"
+binned_df_output_path: "ma-cmi-cf-test/asia_binned_df.csv"
+boxcox_transform_df_output_path: "ma-cmi-cf-test/asia_boxcox_transform_df.csv"
+lambda_df_output_path: "ma-cmi-cf-test/asia_lambda_df.csv"
+
+destination_files:
+    forecasted_output: "ma-cmi-cf-test/asia_forecasted_df.csv"
+    Training_perfomance: "ma-cmi-cf-test/asia_training_performanance_df.csv"
+    Training_status: "ma-cmi-cf-test/asia_training_status_df.csv"
+
+
+month_variable: "months"
+group_by_columns:
+  - "mkt"
+  - "subcategory"
+  
+#missing value imputation
+imputation_method: "knn"  # Options: 'mean', 'median', 'ffill', 'bfill', 'knn', 'spline', 'linear'
+k_neighbors: 5  # Applicable only if method is 'knn'
+columns_to_impute: ["dol_val","eq_vol","avg_eq_price","dist_points"]
+
+
+#outlier_detection_imputation
+outlier_method: 'iqr'  # Options: 'zscore', 'iqr', 'rolling', 'robust_scaler'
+outlier_threshold: 3.0  # Threshold value for Z-score method
+outlier_columns: ['dol_val','eq_vol','avg_eq_price','dist_points']
+
+# Column binning configuration
+column_names:
+  - "Product"
+  - "Category"
+  - "product1"
+
+default_bins:
+  - "Other"
+  - "unknown"
+  - "unknown1"
+
+rules:
+  Product:
+    Group1: ["A", "B"]
+    Group2: ["C", "D"]
+  Category:
+    Group1: ["X"]
+    Group2: ["Y", "Z"]
+  Product1:
+    Group1: ["A", "B"]
+    Group2: ["C", "D"]
+    
+    
+#  - "country"
+
+#box_cox parameters
+value_column: "eq_vol"
+transformed_column: "eq_vol"
+category_column: "mkt"
+subcategory_column: "subcategory"
+
